@@ -3,10 +3,13 @@ package smtp
 import (
 	"crypto/tls"
 	"log"
+
+	"github.com/GeilMail/geilmail/storage/mail"
 )
 
 var (
-	tlsConf tls.Config
+	tlsConf     tls.Config
+	mailStorage mail.Storage
 )
 
 func Boot() {

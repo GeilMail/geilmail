@@ -6,6 +6,9 @@ import (
 	"log"
 	"net"
 	"net/textproto"
+	"time"
+
+	"github.com/GeilMail/geilmail/storage/mail"
 )
 
 const (
@@ -15,7 +18,9 @@ const (
 	maxReceivers    = 10
 )
 
-var listening = true
+var (
+	listening = true
+)
 
 // listen for plain SMTP connections
 func listen() {
@@ -86,6 +91,7 @@ func handleIncomingConnection(c net.Conn) {
 		writeError(c, "invalid MAIL FROM address")
 		return
 	}
+	fromAddr = fromAddr[1 : len(fromAddr)-1]
 	okMsg(c)
 
 	// read receivers (RCPT TO) or wait DATA to start
@@ -121,21 +127,25 @@ func handleIncomingConnection(c net.Conn) {
 
 	c.Write([]byte("354 End data with <CR><LF>.<CR><LF>\n"))
 
-	for {
-		//TODO: implement data limit
-		imsg, err = rdr.ReadLine()
-		if err != nil {
-			writeError(c, errMsgBadSyntax)
-			return
-		}
-		//TODO:<CR><LF>.<CR><LF>
-		if imsg == "." {
-			// schedule mail for delivery
-			c.Write([]byte("250 Ok: queued as 1337\n")) //TODO queue id
-			log.Println("Received message")
-			break
-		}
+	mailData, err := rdr.ReadDotBytes()
+	if err != nil {
+		writeError(c, errMsgBadSyntax)
+		return
 	}
+
+	c.Write([]byte("250 Ok: queued as 1337\n")) //TODO queue id
+	log.Println("Received message")
+	if mailStorage != nil {
+		mailStorage.Store(&mail.Mail{
+			IncomingDate: time.Now(),
+			Recipient:    receivers[0], //TODO: we will need to call it for every recipient
+			Sender:       fromAddr,
+			Content:      mailData,
+		})
+	} else {
+		panic("There is no mail storage agent specified")
+	}
+
 	imsg, err = rdr.ReadLine()
 	if err != nil {
 		writeError(c, errMsgBadSyntax)

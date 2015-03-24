@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"os"
+	"os/signal"
 
 	"github.com/GeilMail/geilmail/protocol/imap"
 	"github.com/GeilMail/geilmail/protocol/smtp"
@@ -14,4 +16,8 @@ func main() {
 
 	imap.Boot()
 	smtp.Boot()
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, os.Kill)
+	<-c // blocks until interrupt
 }
