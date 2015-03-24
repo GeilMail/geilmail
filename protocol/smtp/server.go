@@ -8,6 +8,15 @@ import (
 	"net/textproto"
 )
 
+const (
+	smtpPort        = 1587               //TODO: set to 587 later
+	hostName        = "mail.example.com" //TODO: make configurable
+	errMsgBadSyntax = "message not understood"
+	maxReceivers    = 10
+)
+
+var listening = true
+
 // listen for plain SMTP connections
 func listen() {
 	ln, err := net.Listen("tcp", fmt.Sprintf(":%v", smtpPort))
@@ -17,6 +26,11 @@ func listen() {
 	}
 
 	for {
+		if !listening {
+			ln.Close()
+			break
+		}
+
 		conn, err := ln.Accept()
 		if err != nil {
 			log.Println("Could not accept new connection via SMTP")
@@ -31,7 +45,7 @@ func handleIncomingConnection(c net.Conn) {
 		err  error
 		imsg string // incoming message
 	)
-	//TODO: pipeline
+	//TODO: pipeline?
 	rdr := textproto.NewReader(bufio.NewReader(c))
 	defer c.Close()
 
@@ -112,14 +126,23 @@ func handleIncomingConnection(c net.Conn) {
 		imsg, err = rdr.ReadLine()
 		if err != nil {
 			writeError(c, errMsgBadSyntax)
+			return
 		}
 		//TODO:<CR><LF>.<CR><LF>
 		if imsg == "." {
 			// schedule mail for delivery
 			c.Write([]byte("250 Ok: queued as 1337\n")) //TODO queue id
 			log.Println("Received message")
-			return
+			break
 		}
+	}
+	imsg, err = rdr.ReadLine()
+	if err != nil {
+		writeError(c, errMsgBadSyntax)
+		return
+	}
+	if imsg == "QUIT" {
+		c.Write([]byte("221 Bye"))
 	}
 }
 
