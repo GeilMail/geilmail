@@ -2,6 +2,7 @@ package smtp
 
 import (
 	"bufio"
+	"crypto/tls"
 	"fmt"
 	"log"
 	"net"
@@ -30,6 +31,7 @@ func listen() {
 		// panic("Could not listen on port 587 for SMTP")
 		panic(err)
 	}
+	log.Println("Listening")
 
 	for {
 		if !listening {
@@ -74,15 +76,38 @@ func handleIncomingConnection(c net.Conn) {
 	//TODO: verify host name
 
 	// signalize waiting for content
-	welcomeMsg := fmt.Sprintf("250 Hello %s, we are ready over here\n", "dummy")
+	welcomeMsg := fmt.Sprintf("250-Hello %s, we are ready over here\n250 STARTTLS\n", "dummy") //TODO: refactor this and signalize further capabilities, if needed
 	c.Write([]byte(welcomeMsg))
 
-	// now we expect a MAIL FROM:
 	imsg, err = rdr.ReadLine()
 	if err != nil {
 		writeError(c, errMsgBadSyntax)
 		return
 	}
+
+	log.Printf("Received: %s", imsg)
+	// check if STARTTLS has been annouced
+	if imsg == "STARTTLS" {
+		c.Write([]byte("220 i love encryption\n"))
+		log.Println("STARTTLS")
+		// overwriting connection and reader for transparent encryption handling
+		c = tls.Server(c, tlsConf)
+		rdr = textproto.NewReader(bufio.NewReader(c))
+		// usually the client will now send EHLO
+		imsg, err = rdr.ReadLine()
+		if len(imsg) >= 4 {
+			if imsg[:4] == "EHLO" {
+				advMsg := fmt.Sprintf("250 ready\n")
+				c.Write([]byte(advMsg))
+			} else {
+				log.Println(imsg)
+			}
+		}
+		// allow continuing with MAIL FROM:
+		imsg, err = rdr.ReadLine()
+	}
+
+	// read MAIL FROM:
 	if len(imsg) < 10 || imsg[:10] != "MAIL FROM:" {
 		writeError(c, "invalid MAIL FROM message")
 		return
