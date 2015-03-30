@@ -5,6 +5,9 @@ go:
 script:
     - go test -v ./...
 
+install:
+	- go get github.com/facebookgo/ensure github.com/mattn/go-sqlite3
+
 notifications:
     email:
         on_success: change
