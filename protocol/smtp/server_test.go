@@ -8,13 +8,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/GeilMail/geilmail/configuration"
 	"github.com/GeilMail/geilmail/storage/mail"
 
 	"github.com/facebookgo/ensure"
 )
 
 func TestMain(m *testing.M) {
-	Boot()
+	Boot(&configuration.Config{})
 	time.Sleep(time.Millisecond * 100) //TODO: replace that by a more sane mechanism
 	ret := m.Run()
 	ShutDown()

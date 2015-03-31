@@ -85,11 +85,9 @@ func handleIncomingConnection(c net.Conn) {
 		return
 	}
 
-	log.Printf("Received: %s", imsg)
 	// check if STARTTLS has been annouced
 	if imsg == "STARTTLS" {
 		c.Write([]byte("220 i love encryption\n"))
-		log.Println("STARTTLS")
 		// overwriting connection and reader for transparent encryption handling
 		c = tls.Server(c, tlsConf)
 		rdr = textproto.NewReader(bufio.NewReader(c))
@@ -100,7 +98,7 @@ func handleIncomingConnection(c net.Conn) {
 				advMsg := fmt.Sprintf("250 ready\n")
 				c.Write([]byte(advMsg))
 			} else {
-				log.Println(imsg)
+				writeError(c, "only accepting EHLO at that place")
 			}
 		}
 		// allow continuing with MAIL FROM:

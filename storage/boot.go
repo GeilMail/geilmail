@@ -1,11 +1,9 @@
-package imap
+package storage
 
 import (
-	"log"
-
 	"github.com/GeilMail/geilmail/configuration"
 )
 
 func Boot(c *configuration.Config) {
-	log.Println("Booting IMAP server")
+	openSQLiteConnection(c.SQLite)
 }

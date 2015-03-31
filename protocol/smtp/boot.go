@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 
+	"github.com/GeilMail/geilmail/configuration"
 	"github.com/GeilMail/geilmail/storage/mail"
 )
 
@@ -14,7 +15,7 @@ var (
 	mailStorage mail.Storage
 )
 
-func Boot() {
+func Boot(c *configuration.Config) {
 	gopath := os.Getenv("GOPATH")
 	if string(gopath[len(gopath)-1]) == ":" {
 		gopath = gopath[:len(gopath)-1]
