@@ -8,14 +8,21 @@ import (
 	"testing"
 	"time"
 
-	"github.com/GeilMail/geilmail/configuration"
+	"github.com/GeilMail/geilmail/cfg"
 	"github.com/GeilMail/geilmail/storage/mail"
 
 	"github.com/facebookgo/ensure"
 )
 
+const smtpPort = 1587
+
 func TestMain(m *testing.M) {
-	Boot(&configuration.Config{})
+	Boot(&cfg.Config{
+		SMTP: &cfg.SMTPConfig{
+			ListenIP: "0.0.0.0",
+			Port:     smtpPort,
+		},
+	})
 	time.Sleep(time.Millisecond * 100) //TODO: replace that by a more sane mechanism
 	ret := m.Run()
 	ShutDown()
