@@ -3,11 +3,11 @@ package users
 type DomainName string
 
 type User struct {
-	ID       int
-	Domain   DomainName
-	Mail     string
-	Salt     string
-	Password string
+	ID           int
+	Domain       DomainName
+	Mail         string
+	Salt         string
+	PasswordHash string
 }
 
 type Domain struct {

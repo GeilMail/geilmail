@@ -29,7 +29,10 @@ func (s *SQLiteUserStorage) NewUser(u *User) error {
 		return fmt.Errorf("Domain %s not found", domain)
 	}
 
-	tx.Exec("INSERT INTO users (user_id, domain_id, mail, salt, password) VALUES (null, ?, ?, ?, ?);")
+	_, err = tx.Exec("INSERT INTO users (user_id, domain_id, mail, salt, password_hash) VALUES (null, ?, ?, ?, ?);", domainID, u.Mail, u.Salt, u.PasswordHash)
+	if err != nil {
+		return err
+	}
 
 	err = tx.Commit()
 	if err != nil {
