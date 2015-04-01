@@ -1,9 +1,9 @@
 package storage
 
 import (
-	"github.com/GeilMail/geilmail/configuration"
+	"github.com/GeilMail/geilmail/cfg"
 )
 
-func Boot(c *configuration.Config) {
+func Boot(c *cfg.Config) {
 	openSQLiteConnection(c.SQLite)
 }

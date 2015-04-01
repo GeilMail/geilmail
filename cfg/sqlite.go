@@ -1,4 +1,4 @@
-package configuration
+package cfg
 
 type SQLiteConfig struct {
 	DBPath string

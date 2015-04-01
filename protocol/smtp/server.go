@@ -13,8 +13,6 @@ import (
 )
 
 const (
-	listenHost      = "0.0.0.0"
-	smtpPort        = 1587               //TODO: set to 587 later
 	hostName        = "mail.example.com" //TODO: make configurable
 	errMsgBadSyntax = "message not understood"
 	maxReceivers    = 10
@@ -25,13 +23,12 @@ var (
 )
 
 // listen for plain SMTP connections
-func listen() {
-	ln, err := net.Listen("tcp", fmt.Sprintf("%v:%v", listenHost, smtpPort))
+func listen(listenHost string, listenPort int) {
+	ln, err := net.Listen("tcp", fmt.Sprintf("%v:%v", listenHost, listenPort))
 	if err != nil {
 		// panic("Could not listen on port 587 for SMTP")
 		panic(err)
 	}
-	log.Println("Listening")
 
 	for {
 		if !listening {

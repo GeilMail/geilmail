@@ -6,7 +6,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/GeilMail/geilmail/configuration"
+	"github.com/GeilMail/geilmail/cfg"
 	"github.com/GeilMail/geilmail/storage/mail"
 )
 
@@ -15,7 +15,7 @@ var (
 	mailStorage mail.Storage
 )
 
-func Boot(c *configuration.Config) {
+func Boot(c *cfg.Config) {
 	gopath := os.Getenv("GOPATH")
 	if string(gopath[len(gopath)-1]) == ":" {
 		gopath = gopath[:len(gopath)-1]
@@ -30,7 +30,7 @@ func Boot(c *configuration.Config) {
 	tlsConf = &tls.Config{
 		Certificates: []tls.Certificate{cert},
 	}
-	go listen()
+	go listen(c.SMTP.ListenIP, c.SMTP.Port)
 }
 
 func ShutDown() {

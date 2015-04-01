@@ -3,9 +3,10 @@ package imap
 import (
 	"log"
 
-	"github.com/GeilMail/geilmail/configuration"
+	"github.com/GeilMail/geilmail/cfg"
 )
 
-func Boot(c *configuration.Config) {
+func Boot(c *cfg.Config) {
 	log.Println("Booting IMAP server")
+	go listen(c.IMAP.ListenIP, c.IMAP.Port)
 }
