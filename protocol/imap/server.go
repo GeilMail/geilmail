@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/textproto"
 	"strings"
+	"time"
 )
 
 var listening = true
@@ -110,15 +111,35 @@ func handleIncomingConnection(c net.Conn) {
 		return
 	}
 
+	// Normal operation now
+	for {
+		seq, imsg, err = receiveInSequence(rdr)
+		if err != nil {
+			sendError(c, "??")
+			return
+		}
+
+		switch strings.ToUpper(strings.SplitN(imsg, " ", 2)[0]) {
+		case "LSUB":
+			send(c, fmt.Sprintf("%s NO", seq))
+		case "LOGOUT":
+			send(c, fmt.Sprintf("%s OK LOGOUT completed", seq))
+			return
+		default:
+			log.Println("Received something I don't understand.")
+		}
+
+		time.Sleep(1 * time.Second)
+	}
 }
 
 func send(c net.Conn, data string) {
-	log.Println("sent: ", data)
+	log.Println("sent:", data)
 	c.Write([]byte(data + "\n"))
 }
 
 func sendError(c net.Conn, err string) {
-	log.Println("sent errormsg: ", err)
+	log.Println("sent errormsg:", err)
 	c.Write([]byte(err))
 	c.Close()
 }
