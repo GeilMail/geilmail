@@ -36,6 +36,7 @@ func handleIncomingConnection(c net.Conn) {
 	log.Printf("New connection with %v\n", c.RemoteAddr())
 	var (
 		err  error
+		seq  string // sequence ID
 		imsg string // incoming message
 		cmd  []string
 	)
@@ -43,20 +44,65 @@ func handleIncomingConnection(c net.Conn) {
 	rdr := textproto.NewReader(bufread)
 	defer c.Close()
 
-	c.Write([]byte("* OK IMAP4rev1 Service Ready\n"))
+	send(c, "* OK IMAP4rev1 Service Ready\n")
 
-	imsg, err = rdr.ReadLine()
+	seq, imsg, err = receiveInSequence(rdr)
 	if err != nil {
-		fmt.Println("I didn't like that")
-	}
-	cmd = strings.Split(imsg, " ")
-	if len(cmd) < 2 {
-		if strings.ToUpper(cmd[1]) == "CAPABILITY" {
-			c.Write([]byte("* CAPABILITY IMAP4rev1 STARTTLS\n"))
-		} else {
-			panic("hä?")
-		}
+		sendError(c, err)
+		return
 	}
 
-	fmt.Println(imsg)
+	if strings.ToUpper(imsg) == "CAPABILITY" {
+		send(c, "* CAPABILITY IMAP4rev1 STARTTLS\n")
+		send(c, fmt.Sprintf("%s OK CAPABILITY COMPLETED\n", seq))
+	} else {
+		sendError(c, "wrong command order")
+	}
+
+	// Now we *need* STARTTLS
+	seq, imsg, err = receiveInSequence(rdr)
+	if err != nil {
+		sendError(c, err)
+		return
+	}
+	if imsg != "STARTTLS" {
+		sendError(c, fmt.Errorf("Only connections with STARTTLS are supported; for your own safety"))
+		return
+	}
+
+	c = tls.Server(c, tlsConf)
+
+}
+
+func send(c net.Conn, data string) {
+	log.Println("sent: ", data)
+	c.Write([]byte(data))
+}
+
+func sendError(c net.Conn, err string) {
+	log.Println("sent errormsg: ", err)
+	c.Write([]byte(err))
+	c.Close()
+}
+
+func receive(r *textproto.Reader) (string, error) {
+	s, err := r.ReadLine()
+	if err != nil {
+		log.Println("read: [ERROR]")
+		return "", err
+	}
+	return s, nil
+}
+
+func receiveInSequence(r *textproto.Reader) (string, string, error) {
+	imsg, err := receive(r)
+	if err != nil {
+		return "", "", err
+	}
+
+	sl := strings.SplitN(imsg, " ", 2)
+	if len(sl) != 2 {
+		return "", "", fmt.Errorf("Command not in sequence: %s", imsg)
+	}
+	return sl[0], sl[1], nil
 }
