@@ -3,8 +3,6 @@ package smtp
 import (
 	"crypto/tls"
 	"log"
-	"os"
-	"path"
 
 	"github.com/GeilMail/geilmail/cfg"
 	"github.com/GeilMail/geilmail/storage/mail"
@@ -16,12 +14,7 @@ var (
 )
 
 func Boot(c *cfg.Config) {
-	gopath := os.Getenv("GOPATH")
-	if string(gopath[len(gopath)-1]) == ":" {
-		gopath = gopath[:len(gopath)-1]
-	}
-	log.Println(gopath)
-	cert, err := tls.LoadX509KeyPair(path.Join(gopath, "src/github.com/GeilMail/geilmail/certs/server.crt"), path.Join(gopath, "src/github.com/GeilMail/geilmail/certs/server.key")) //TODO: make configurable
+	cert, err := tls.LoadX509KeyPair(c.TLS.CertPath, c.TLS.KeyPath)
 	if err != nil {
 		panic(err)
 	}

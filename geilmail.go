@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"path"
 
 	"github.com/GeilMail/geilmail/cfg"
 	"github.com/GeilMail/geilmail/protocol/imap"
@@ -16,6 +17,11 @@ import (
 func main() {
 	log.Println("Starting GeilMail")
 
+	gopath := os.Getenv("GOPATH")
+	if string(gopath[len(gopath)-1]) == ":" {
+		gopath = gopath[:len(gopath)-1]
+	}
+
 	//TODO: read config from file
 	conf := &cfg.Config{
 		SQLite: &cfg.SQLiteConfig{DBPath: "geilmail.db"},
@@ -27,11 +33,15 @@ func main() {
 			ListenIP: "0.0.0.0",
 			Port:     1587, //TODO: set to 587
 		},
+		TLS: &cfg.TLSConfig{
+			CertPath: path.Join(gopath, "src/github.com/GeilMail/geilmail/certs/server.crt"),
+			KeyPath:  path.Join(gopath, "src/github.com/GeilMail/geilmail/certs/server.key"),
+		},
 	}
 
-	imap.Boot(conf)
-	smtp.Boot(conf)
-	storage.Boot(conf)
+	go imap.Boot(conf)
+	go smtp.Boot(conf)
+	go storage.Boot(conf)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, os.Kill)
