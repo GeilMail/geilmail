@@ -7,9 +7,6 @@ import (
 	"log"
 	"net"
 	"net/textproto"
-	"time"
-
-	"github.com/GeilMail/geilmail/storage/mail"
 )
 
 const (
@@ -26,7 +23,6 @@ var (
 func listen(listenHost string, listenPort int) {
 	ln, err := net.Listen("tcp", fmt.Sprintf("%v:%v", listenHost, listenPort))
 	if err != nil {
-		// panic("Could not listen on port 587 for SMTP")
 		panic(err)
 	}
 
@@ -157,12 +153,16 @@ func handleIncomingConnection(c net.Conn) {
 	c.Write([]byte("250 Ok: queued as 1337\n")) //TODO queue id
 	log.Println("Received message")
 	if mailStorage != nil {
-		mailStorage.Store(&mail.Mail{
-			IncomingDate: time.Now(),
-			Recipient:    receivers[0], //TODO: we will need to call it for every recipient
-			Sender:       fromAddr,
-			Content:      mailData,
-		})
+
+		fmt.Println(mailData)
+
+		// mailStorage.MailDrop(mailData)
+		// mailStorage.Store(&mail.Mail{
+		// 	IncomingDate: time.Now(),
+		// 	Recipient:    receivers[0], //TODO: we will need to call it for every recipient
+		// 	Sender:       fromAddr,
+		// 	Content:      mailData,
+		// })
 	} else {
 		panic("There is no mail storage agent specified")
 	}

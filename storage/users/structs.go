@@ -1,5 +1,7 @@
 package users
 
+import "github.com/GeilMail/geilmail/helpers"
+
 type DomainName string
 
 type User struct {
@@ -19,6 +21,7 @@ type UserStorage interface {
 	NewUser(*User) error
 	UpdatePassword(*User) error
 	DeleteUser(*User) error
+	GetUserByAddress(addr helpers.MailAddress)
 }
 
 type DomainStorage interface {
