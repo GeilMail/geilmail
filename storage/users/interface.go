@@ -2,13 +2,17 @@ package users
 
 import "github.com/GeilMail/geilmail/helpers"
 
+var (
+	UserProvider   UserStorage
+	DomainProvider DomainStorage
+)
+
 type DomainName string
 
 type User struct {
 	ID           int
 	Domain       DomainName
 	Mail         string
-	Salt         string
 	PasswordHash string
 }
 

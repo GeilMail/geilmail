@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/GeilMail/geilmail/storage/users"
+
 	"github.com/landjur/go-uuid"
 )
 

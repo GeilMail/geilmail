@@ -5,12 +5,10 @@ import (
 	"log"
 
 	"github.com/GeilMail/geilmail/cfg"
-	"github.com/GeilMail/geilmail/storage/mail"
 )
 
 var (
-	tlsConf     *tls.Config
-	mailStorage mail.Storage
+	tlsConf *tls.Config
 )
 
 func Boot(c *cfg.Config) {

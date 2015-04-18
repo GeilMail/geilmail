@@ -2,9 +2,12 @@ package mail
 
 import (
 	"sync"
+	"time"
 
 	"github.com/GeilMail/geilmail/helpers"
 	"github.com/GeilMail/geilmail/storage/users"
+
+	"github.com/landjur/go-uuid"
 )
 
 type InMemoryStorage struct {
@@ -22,7 +25,20 @@ func GetInMemoryStorage() *InMemoryStorage {
 }
 
 func (i *InMemoryStorage) MailDrop(content []byte, receiver helpers.MailAddress) error {
-	panic("MailDrop")
+	mailID, err := uuid.NewTimeBased()
+	if err != nil {
+		return err
+	}
+	m := Mail{
+		ID:           MailID(mailID),
+		IncomingDate: time.Now(),
+		MailPath:     MailPath("/"),
+		Unread:       true,
+	} //TODO: owner, path etc
+
+	i.MailsMtx.Lock()
+	i.Mails = append(i.Mails, &m)
+	i.MailsMtx.Unlock()
 	return nil
 }
 
