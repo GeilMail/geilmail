@@ -7,8 +7,7 @@ CREATE TABLE users (
 	user_id INTEGER PRIMARY KEY,
 	domain_id INTEGER,
 	mail VARCHAR(200),
-	salt VARCHAR(30),
-	password_hash VARCHAR(32),
+	password_hash VARCHAR(100),
 	FOREIGN KEY(domain_id) REFERENCES domains(id)
 );
 

@@ -42,11 +42,23 @@ func (s *SQLiteUserStorage) NewUser(u *User) error {
 }
 
 func (s *SQLiteUserStorage) UpdatePassword(u *User) error {
+	panic("UpdatePassword")
 	return nil
 }
 
 func (s *SQLiteUserStorage) DeleteUser(u *User) error {
+	panic("DeleteUser")
 	return nil
+}
+
+func (s *SQLiteUserStorage) CheckPassword(mailAddr helpers.MailAddress, pw string) (bool, error) {
+	var foundPW []byte
+	r := storage.SQLiteConn.QueryRow("SELECT password_hash FROM users WHERE mail = ?;", mailAddr)
+	err := r.Scan(&foundPW)
+	if err != nil {
+		return checkPassword(pw, foundPW), nil
+	}
+	return false, nil
 }
 
 type SQLiteDomainStorage struct{}

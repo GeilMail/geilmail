@@ -8,9 +8,10 @@ var (
 )
 
 type DomainName string
+type UserID int
 
 type User struct {
-	ID           int
+	ID           UserID
 	Domain       DomainName
 	Mail         string
 	PasswordHash string
@@ -22,12 +23,12 @@ type Domain struct {
 }
 
 type UserStorage interface {
-	NewUser(*User) error
-	UpdatePassword(*User) error
-	DeleteUser(*User) error
-	GetUserByAddress(addr helpers.MailAddress)
+	NewUser(user *User) error
+	GetUserByAddress(addr helpers.MailAddress) (*User, error)
+	UpdatePassword(user *User, newPW string) error
+	DeleteUser(user *User) error
 }
 
 type DomainStorage interface {
-	NewDomain(*Domain) error
+	NewDomain(domain *Domain) error
 }
