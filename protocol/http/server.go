@@ -11,8 +11,10 @@ func listen(hostport string) {
 	router := gin.New()
 
 	api := router.Group("/api")
-	api.GET("/", rootURL)
-	api.GET("/mail/add", addMailAddr)
+	{
+		api.GET("/", rootURL)
+		api.POST("/account/create", createAccount)
+	}
 
 	router.Run(hostport)
 }
@@ -21,7 +23,19 @@ func rootURL(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "up and running"})
 }
 
-func addMailAddr(c *gin.Context) {
+type RequestCreateAccount struct {
+	MailAddress string `form:"mailaddress" binding:"required"`
+	Password    string `form:"password" binding:"required"`
+}
+
+func createAccount(c *gin.Context) {
 	//TODO: add create account impl
-	c.JSON(http.StatusOK, gin.H{"message": "TODO"})
+	var req RequestCreateAccount
+	passed := c.Bind(&req)
+	if !passed {
+		c.JSON(http.StatusBadRequest, nil)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": req.MailAddress})
 }
