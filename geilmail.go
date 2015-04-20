@@ -7,6 +7,7 @@ import (
 	"path"
 
 	"github.com/GeilMail/geilmail/cfg"
+	"github.com/GeilMail/geilmail/protocol/http"
 	"github.com/GeilMail/geilmail/protocol/imap"
 	"github.com/GeilMail/geilmail/protocol/smtp"
 	"github.com/GeilMail/geilmail/storage"
@@ -37,10 +38,14 @@ func main() {
 			CertPath: path.Join(gopath, "src/github.com/GeilMail/geilmail/certs/server.crt"),
 			KeyPath:  path.Join(gopath, "src/github.com/GeilMail/geilmail/certs/server.key"),
 		},
+		HTTP: &cfg.HTTPConfig{
+			Listen: "0.0.0.0:51488",
+		},
 	}
 
 	go imap.Boot(conf)
 	go smtp.Boot(conf)
+	go http.Boot(conf)
 	go storage.Boot(conf)
 
 	c := make(chan os.Signal, 1)

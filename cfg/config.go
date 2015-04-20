@@ -5,6 +5,7 @@ type Config struct {
 	IMAP   *IMAPConfig
 	SMTP   *SMTPConfig
 	TLS    *TLSConfig
+	HTTP   *HTTPConfig
 }
 
 type IMAPConfig struct {
@@ -20,4 +21,8 @@ type SMTPConfig struct {
 type TLSConfig struct {
 	CertPath string
 	KeyPath  string
+}
+
+type HTTPConfig struct {
+	Listen string
 }
