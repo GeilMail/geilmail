@@ -1,0 +1,18 @@
+{
+    "github.com/DATA-DOG/go-sqlmock": "",
+    "github.com/davecgh/go-spew/spew": "f9f629a1d082960e5d1747f33c2b378612615fea",
+    "github.com/facebookgo/ensure": "c4655f2fc9322fb116fedbe69dbbfe2d513a9171",
+    "github.com/facebookgo/stack": "f84a8e62f02c1c9308b5f27d52862493be07405e",
+    "github.com/facebookgo/subset": "7306dc4f3e403eabb0b1bbd4b5499a3f1d3a1e2e",
+    "github.com/gin-gonic/gin": "4998bc2b2e36cb2c498d75b1213dc92790fec98a",
+    "github.com/landjur/go-uuid": "50db4f8d2b7910614fc20e9e841179f4174c64e5",
+    "github.com/manucorporat/sse": "c142f0f1baea5cef7f98a8a6c222f6134368c1f5",
+    "github.com/mattn/go-colorable": "d67e0b7d1797975196499f79bcc322c08b9f218b",
+    "github.com/mattn/go-sqlite3": "542ae647f8601bafd96233961b150cae198e0295",
+    "github.com/wayn3h0/go-uuid": "50db4f8d2b7910614fc20e9e841179f4174c64e5",
+    "golang.org/x/crypto/bcrypt": "1e856cbfdf9bc25eefca75f83f25d55e35ae72e0",
+    "golang.org/x/crypto/blowfish": "1e856cbfdf9bc25eefca75f83f25d55e35ae72e0",
+    "golang.org/x/net/context": "dfcbca9c45aeabb8971affa4f76b2d40f6f72328",
+    "gopkg.in/bluesuncorp/validator.v5": "df95f9de27b8022e57f8ce09448cee6b1170bb3d",
+    "gopkg.in/yaml.v2": "c1cd2254a6dd314c9d73c338c12688c9325d85c6"
+}
