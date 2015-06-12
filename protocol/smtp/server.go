@@ -7,8 +7,8 @@ import (
 	"log"
 	"net"
 	"net/textproto"
-	"time"
 
+	"github.com/GeilMail/geilmail/helpers"
 	"github.com/GeilMail/geilmail/storage/mail"
 )
 
@@ -26,7 +26,6 @@ var (
 func listen(listenHost string, listenPort int) {
 	ln, err := net.Listen("tcp", fmt.Sprintf("%v:%v", listenHost, listenPort))
 	if err != nil {
-		// panic("Could not listen on port 587 for SMTP")
 		panic(err)
 	}
 
@@ -116,7 +115,7 @@ func handleIncomingConnection(c net.Conn) {
 	okMsg(c)
 
 	// read receivers (RCPT TO) or wait DATA to start
-	receivers := []string{}
+	receivers := []helpers.MailAddress{}
 	for {
 		if len(receivers) > maxReceivers {
 			writeError(c, "too many receivers")
@@ -142,7 +141,7 @@ func handleIncomingConnection(c net.Conn) {
 		}
 		//TODO: mail address validation
 		rcptAddr = rcptAddr[1 : len(rcptAddr)-1]
-		receivers = append(receivers, rcptAddr)
+		receivers = append(receivers, helpers.MailAddress(rcptAddr)) //TODO: validate mail address
 		okMsg(c)
 	}
 
@@ -156,13 +155,8 @@ func handleIncomingConnection(c net.Conn) {
 
 	c.Write([]byte("250 Ok: queued as 1337\n")) //TODO queue id
 	log.Println("Received message")
-	if mailStorage != nil {
-		mailStorage.Store(&mail.Mail{
-			IncomingDate: time.Now(),
-			Recipient:    receivers[0], //TODO: we will need to call it for every recipient
-			Sender:       fromAddr,
-			Content:      mailData,
-		})
+	if mail.StorageProvider != nil {
+		mail.StorageProvider.MailDrop(mailData, receivers[0])
 	} else {
 		panic("There is no mail storage agent specified")
 	}

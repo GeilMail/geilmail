@@ -5,24 +5,16 @@ import (
 	"log"
 
 	"github.com/GeilMail/geilmail/cfg"
-	"github.com/GeilMail/geilmail/storage/mail"
+	"github.com/GeilMail/geilmail/helpers"
 )
 
 var (
-	tlsConf     *tls.Config
-	mailStorage mail.Storage
+	tlsConf *tls.Config
 )
 
 func Boot(c *cfg.Config) {
-	cert, err := tls.LoadX509KeyPair(c.TLS.CertPath, c.TLS.KeyPath)
-	if err != nil {
-		panic(err)
-	}
-
+	tlsConf = helpers.TLSConfig(c)
 	log.Println("Booting SMTP server")
-	tlsConf = &tls.Config{
-		Certificates: []tls.Certificate{cert},
-	}
 	go listen(c.SMTP.ListenIP, c.SMTP.Port)
 }
 

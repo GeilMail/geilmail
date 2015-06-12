@@ -1,8 +1,13 @@
 package mail
 
 import (
-	"log"
 	"sync"
+	"time"
+
+	"github.com/GeilMail/geilmail/helpers"
+	"github.com/GeilMail/geilmail/storage/users"
+
+	"github.com/landjur/go-uuid/timebased"
 )
 
 type InMemoryStorage struct {
@@ -19,10 +24,25 @@ func GetInMemoryStorage() *InMemoryStorage {
 	return ims
 }
 
-func (i *InMemoryStorage) Store(m *Mail) error {
+func (i *InMemoryStorage) MailDrop(content []byte, receiver helpers.MailAddress) error {
+	mailID, err := timebased.New()
+	if err != nil {
+		return err
+	}
+	m := Mail{
+		ID:           MailID(mailID),
+		IncomingDate: time.Now(),
+		MailPath:     MailPath("/"),
+		Unread:       true,
+	} //TODO: owner, path etc
+
 	i.MailsMtx.Lock()
-	log.Printf("Storing %v\n", m)
-	i.Mails = append(i.Mails, m)
+	i.Mails = append(i.Mails, &m)
 	i.MailsMtx.Unlock()
 	return nil
+}
+
+func (i *InMemoryStorage) GetUserMail(user users.User, path MailPath) ([]*Mail, error) {
+	panic("GetUserMail")
+	return nil, nil
 }

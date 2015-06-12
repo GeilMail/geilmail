@@ -23,7 +23,6 @@ func TestCreateDomainAndUser(t *testing.T) {
 		ID:           0,
 		Domain:       "example.com",
 		Mail:         "test@example.com",
-		Salt:         "ThisIsSomeRandomSalt",
 		PasswordHash: "ThisIsAPasswordHash",
 	}
 
@@ -36,7 +35,7 @@ func TestCreateDomainAndUser(t *testing.T) {
 
 	sqlmock.ExpectBegin()
 	sqlmock.ExpectQuery(`SELECT id FROM domains WHERE domain = \?;`).WithArgs("example.com").WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
-	sqlmock.ExpectExec(`INSERT INTO users \(user_id, domain_id, mail, salt, password_hash\) VALUES \(null, \?, \?, \?, \?\);`).WithArgs(1, u.Mail, u.Salt, u.PasswordHash).WillReturnResult(sqlmock.NewResult(1, 1))
+	sqlmock.ExpectExec(`INSERT INTO users \(user_id, domain_id, mail, password_hash\) VALUES \(null, \?, \?, \?, \?\);`).WithArgs(1, u.Mail, u.PasswordHash).WillReturnResult(sqlmock.NewResult(1, 1))
 	sqlmock.ExpectCommit()
 
 	//TODO: create user
@@ -53,7 +52,6 @@ func TestCreatingUserForInexistentDomain(t *testing.T) {
 		ID:           0,
 		Domain:       "inexistent.example.com",
 		Mail:         "inexistent@inexistent.example.com",
-		Salt:         "random",
 		PasswordHash: "oink",
 	}
 
