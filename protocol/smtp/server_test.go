@@ -3,10 +3,10 @@ package smtp
 import (
 	"crypto/tls"
 	"fmt"
+	"log"
 	"net/smtp"
 	"os"
 	"testing"
-	"time"
 
 	"github.com/GeilMail/geilmail/cfg"
 	"github.com/GeilMail/geilmail/storage/mail"
@@ -22,14 +22,16 @@ func TestMain(m *testing.M) {
 		gopath = gopath[:len(gopath)-1]
 	}
 
-	Boot(&cfg.Config{
+	rdy := Boot(&cfg.Config{
 		SMTP: cfg.SMTPConfig{
 			ListenIP: "0.0.0.0",
 			Port:     smtpPort,
 		},
 		TLS: cfg.TLSConfig{},
 	})
-	time.Sleep(time.Millisecond * 100) //TODO: replace that by a more sane mechanism
+	log.Println("waiting for boot to finish")
+	<-rdy
+	// time.Sleep(time.Millisecond * 100) //TODO: replace that by a more sane mechanism
 	ret := m.Run()
 	ShutDown()
 	os.Exit(ret)

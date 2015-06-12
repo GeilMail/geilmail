@@ -13,12 +13,13 @@ import (
 
 var listening = true
 
-func listen(listenHost string, listenPort int) {
+func listen(listenHost string, listenPort int, rdy chan bool) {
 	ln, err := net.Listen("tcp", fmt.Sprintf("%v:%v", listenHost, listenPort))
 	if err != nil {
 		panic(err)
 	}
-
+	// now accepting connections
+	rdy <- true
 	for {
 		if !listening {
 			ln.Close()

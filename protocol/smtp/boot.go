@@ -12,10 +12,12 @@ var (
 	tlsConf *tls.Config
 )
 
-func Boot(c *cfg.Config) {
+func Boot(c *cfg.Config) <-chan bool {
 	tlsConf = helpers.TLSConfig(c)
 	log.Println("Booting SMTP server")
-	go listen(c.SMTP.ListenIP, c.SMTP.Port)
+	rdy := make(chan bool, 1)
+	go listen(c.SMTP.ListenIP, c.SMTP.Port, rdy)
+	return rdy
 }
 
 func ShutDown() {

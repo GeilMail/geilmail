@@ -10,8 +10,10 @@ import (
 
 var tlsConf *tls.Config
 
-func Boot(c *cfg.Config) {
+func Boot(c *cfg.Config) chan bool {
 	tlsConf = helpers.TLSConfig(c)
 	log.Println("Booting IMAP server")
-	go listen(c.IMAP.ListenIP, c.IMAP.Port)
+	rdy := make(chan bool, 1)
+	go listen(c.IMAP.ListenIP, c.IMAP.Port, rdy)
+	return rdy
 }
