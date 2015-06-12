@@ -7,7 +7,7 @@ import (
 	"github.com/GeilMail/geilmail/helpers"
 	"github.com/GeilMail/geilmail/storage/users"
 
-	"github.com/landjur/go-uuid"
+	"github.com/landjur/go-uuid/timebased"
 )
 
 type InMemoryStorage struct {
@@ -25,7 +25,7 @@ func GetInMemoryStorage() *InMemoryStorage {
 }
 
 func (i *InMemoryStorage) MailDrop(content []byte, receiver helpers.MailAddress) error {
-	mailID, err := uuid.NewTimeBased()
+	mailID, err := timebased.New()
 	if err != nil {
 		return err
 	}

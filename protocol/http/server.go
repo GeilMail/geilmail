@@ -31,8 +31,8 @@ type RequestCreateAccount struct {
 func createAccount(c *gin.Context) {
 	//TODO: add create account impl
 	var req RequestCreateAccount
-	passed := c.Bind(&req)
-	if !passed {
+	err := c.Bind(&req)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, nil)
 		return
 	}

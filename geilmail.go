@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"path"
 
 	"github.com/GeilMail/geilmail/cfg"
 	"github.com/GeilMail/geilmail/protocol/http"
@@ -23,25 +22,26 @@ func main() {
 		gopath = gopath[:len(gopath)-1]
 	}
 
+	conf := cfg.ReadConfig("config.yaml")
 	//TODO: read config from file
-	conf := &cfg.Config{
-		SQLite: &cfg.SQLiteConfig{DBPath: "geilmail.db"},
-		IMAP: &cfg.IMAPConfig{
-			ListenIP: "0.0.0.0",
-			Port:     1143, //TODO: set to 143
-		},
-		SMTP: &cfg.SMTPConfig{
-			ListenIP: "0.0.0.0",
-			Port:     1587, //TODO: set to 587
-		},
-		TLS: &cfg.TLSConfig{
-			CertPath: path.Join(gopath, "src/github.com/GeilMail/geilmail/certs/server.crt"),
-			KeyPath:  path.Join(gopath, "src/github.com/GeilMail/geilmail/certs/server.key"),
-		},
-		HTTP: &cfg.HTTPConfig{
-			Listen: "0.0.0.0:51488",
-		},
-	}
+	// conf := &cfg.Config{
+	// 	SQLite: &cfg.SQLiteConfig{DBPath: "geilmail.db"},
+	// 	IMAP: &cfg.IMAPConfig{
+	// 		ListenIP: "0.0.0.0",
+	// 		Port:     1143, //TODO: set to 143
+	// 	},
+	// 	SMTP: &cfg.SMTPConfig{
+	// 		ListenIP: "0.0.0.0",
+	// 		Port:     1587, //TODO: set to 587
+	// 	},
+	// 	TLS: &cfg.TLSConfig{
+	// 		CertPath: path.Join(gopath, "src/github.com/GeilMail/geilmail/certs/server.crt"),
+	// 		KeyPath:  path.Join(gopath, "src/github.com/GeilMail/geilmail/certs/server.key"),
+	// 	},
+	// 	HTTP: &cfg.HTTPConfig{
+	// 		Listen: "0.0.0.0:51488",
+	// 	},
+	// }
 
 	go imap.Boot(conf)
 	go smtp.Boot(conf)

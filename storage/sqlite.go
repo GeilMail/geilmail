@@ -10,7 +10,7 @@ import (
 
 var SQLiteConn *sql.DB
 
-func openSQLiteConnection(sqlconf *cfg.SQLiteConfig) {
+func openSQLiteConnection(sqlconf cfg.SQLiteConfig) {
 	var err error
 	SQLiteConn, err = sql.Open("sqlite3", sqlconf.DBPath)
 	if err != nil {

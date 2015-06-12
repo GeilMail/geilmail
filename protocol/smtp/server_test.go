@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/smtp"
 	"os"
-	"path"
 	"testing"
 	"time"
 
@@ -24,14 +23,11 @@ func TestMain(m *testing.M) {
 	}
 
 	Boot(&cfg.Config{
-		SMTP: &cfg.SMTPConfig{
+		SMTP: cfg.SMTPConfig{
 			ListenIP: "0.0.0.0",
 			Port:     smtpPort,
 		},
-		TLS: &cfg.TLSConfig{
-			CertPath: path.Join(gopath, "src/github.com/GeilMail/geilmail/certs/server.crt"),
-			KeyPath:  path.Join(gopath, "src/github.com/GeilMail/geilmail/certs/server.key"),
-		},
+		TLS: cfg.TLSConfig{},
 	})
 	time.Sleep(time.Millisecond * 100) //TODO: replace that by a more sane mechanism
 	ret := m.Run()
