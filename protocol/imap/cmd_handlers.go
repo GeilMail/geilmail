@@ -5,6 +5,11 @@ import (
 	"net"
 )
 
+func handleCapability(c net.Conn, seq, msg string) {
+	send(c, "* CAPABILITY IMAP4rev1 STARTTLS")
+	send(c, fmt.Sprintf("%s OK CAPABILITY COMPLETED", seq))
+}
+
 func handleListCommand(c net.Conn, seq, msg string) {
 	fmt.Println("TODO: implement handle list")
 	send(c, fmt.Sprintf(`* LIST (\Noselect) "/" ""`))

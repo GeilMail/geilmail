@@ -54,8 +54,7 @@ func handleIncomingConnection(c net.Conn) {
 	}
 
 	if strings.ToUpper(imsg) == "CAPABILITY" {
-		send(c, "* CAPABILITY IMAP4rev1 STARTTLS")
-		send(c, fmt.Sprintf("%s OK CAPABILITY COMPLETED", seq))
+		handleCapability(c, seq, imsg)
 	} else {
 		sendError(c, "wrong command order")
 	}
@@ -106,7 +105,8 @@ func handleIncomingConnection(c net.Conn) {
 		magicWord = strings.ToUpper(strings.Split(imsg, " ")[0])
 	}
 	if magicWord == "LOGIN" {
-		send(c, fmt.Sprintf("%s OK", seq))
+		//TODO: implement LOGIN
+		send(c, fmt.Sprintf("%s OK LOGIN", seq))
 	} else {
 		sendError(c, fmt.Sprintf("%s BAD no idea what you intended to do", seq))
 		return
@@ -121,6 +121,8 @@ func handleIncomingConnection(c net.Conn) {
 		}
 
 		switch strings.ToUpper(strings.SplitN(imsg, " ", 2)[0]) {
+		case "CAPABILITY":
+			handleCapability(c, seq, imsg)
 		case "LSUB":
 			send(c, fmt.Sprintf("%s NO", seq))
 		case "LIST":
@@ -135,9 +137,11 @@ func handleIncomingConnection(c net.Conn) {
 			send(c, fmt.Sprintf("%s OK LOGOUT completed", seq))
 			return
 		default:
-			log.Println("Received something I don't understand.")
+			sendError(c, fmt.Sprintf("%s BAD - command not supported", seq))
+			log.Printf("Received something I don't understand: %s", imsg)
+			return
 		}
 
-		time.Sleep(1 * time.Second)
+		time.Sleep(100 * time.Millisecond)
 	}
 }

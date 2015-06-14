@@ -2,6 +2,7 @@ package imap
 
 import (
 	"crypto/tls"
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -32,12 +33,18 @@ func TestMain(m *testing.M) {
 	os.Exit(ret)
 }
 
+// This is an integration test for the IMAP workflow.
 func TestIMAPFlow(t *testing.T) {
-	c, err := imap.Dial("localhost:1143")
+	c, err := imap.Dial(fmt.Sprintf("localhost:%d", imapTestPort))
 	ensure.Nil(t, err)
 	defer c.Logout(5 * time.Second)
 	_, err = c.StartTLS(&tls.Config{
 		InsecureSkipVerify: true,
 	})
+	ensure.Nil(t, err)
+	ensure.True(t, c.State() == imap.Login)
+
+	// tls has worked, now login
+	_, err = c.Login("test@example.com", "1234")
 	ensure.Nil(t, err)
 }
