@@ -3,7 +3,6 @@ package smtp
 import (
 	"crypto/tls"
 	"fmt"
-	"log"
 	"net/smtp"
 	"os"
 	"testing"
@@ -29,9 +28,7 @@ func TestMain(m *testing.M) {
 		},
 		TLS: cfg.TLSConfig{},
 	})
-	log.Println("waiting for boot to finish")
 	<-rdy
-	// time.Sleep(time.Millisecond * 100) //TODO: replace that by a more sane mechanism
 	ret := m.Run()
 	ShutDown()
 	os.Exit(ret)

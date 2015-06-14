@@ -17,3 +17,7 @@ func Boot(c *cfg.Config) chan bool {
 	go listen(c.IMAP.ListenIP, c.IMAP.Port, rdy)
 	return rdy
 }
+
+func ShutDown() {
+	listening = false
+}

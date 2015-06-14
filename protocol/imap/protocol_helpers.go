@@ -10,7 +10,7 @@ import (
 
 func send(c net.Conn, data string) {
 	log.Println("sent:", data)
-	c.Write([]byte(data + "\n"))
+	c.Write([]byte(data + "\r\n"))
 }
 
 func sendError(c net.Conn, err string) {
