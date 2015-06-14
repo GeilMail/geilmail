@@ -5,12 +5,13 @@ github.com/facebookgo/ensure
 github.com/facebookgo/stack 
 github.com/facebookgo/subset 
 github.com/gin-gonic/gin 
+github.com/jinzhu/gorm
 github.com/landjur/go-uuid 
 github.com/manucorporat/sse 
 github.com/mattn/go-colorable 
 github.com/mattn/go-sqlite3 
 github.com/mxk/go-imap/imap
-github.com/wayn3h0/go-uuid 
+github.com/wayn3h0/go-uuid
 golang.org/x/crypto/bcrypt 
 golang.org/x/crypto/blowfish 
 golang.org/x/net/context 

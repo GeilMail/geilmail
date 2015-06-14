@@ -156,11 +156,7 @@ func handleIncomingConnection(c net.Conn) {
 
 	c.Write([]byte("250 Ok: queued as 1337\n")) //TODO queue id
 	log.Println("Received message")
-	if mail.StorageProvider != nil {
-		mail.StorageProvider.MailDrop(mailData, receivers[0])
-	} else {
-		panic("There is no mail storage agent specified")
-	}
+	mail.MailDrop(receivers, mailData)
 
 	imsg, err = rdr.ReadLine()
 	if err != nil {

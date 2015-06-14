@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/GeilMail/geilmail/cfg"
-	"github.com/GeilMail/geilmail/storage/mail"
 
 	"github.com/facebookgo/ensure"
 )
@@ -49,7 +48,6 @@ func eq(a, b []byte) bool {
 }
 
 func TestSMTPSubmission(t *testing.T) {
-	mail.StorageProvider = mail.GetInMemoryStorage()
 	msgContent := []byte("This is a very specific message for the TestSMTPSubmission.\n")
 
 	err := sendMail(fmt.Sprintf("localhost:%d", smtpPort), nil, "test@example.com", []string{"other@example.com"}, msgContent, false)

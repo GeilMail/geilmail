@@ -8,11 +8,18 @@ import (
 )
 
 type Config struct {
-	SQLite SQLiteConfig
-	IMAP   IMAPConfig `yaml:"IMAP"`
-	SMTP   SMTPConfig
-	TLS    TLSConfig
-	HTTP   HTTPConfig
+	Storage StorageConfig
+	IMAP    IMAPConfig
+	SMTP    SMTPConfig
+	TLS     TLSConfig
+	HTTP    HTTPConfig
+}
+
+type StorageConfig struct {
+	Provider string
+	SQLite   struct {
+		DBPath string
+	}
 }
 
 type IMAPConfig struct {

@@ -4,22 +4,26 @@ import (
 	"time"
 
 	"github.com/GeilMail/geilmail/storage/users"
-
-	"github.com/landjur/go-uuid"
+	"github.com/jinzhu/gorm"
 )
 
-type MailPath string
-type MailID uuid.UUID
+var db gorm.DB
 
 type Mail struct {
-	ID           MailID
+	ID           uint
 	IncomingDate time.Time
 	Owner        users.User
-	MailPath     MailPath
+	MailPath     string
 	Unread       bool
 }
 
 func (m *Mail) GetContent() []byte {
 	panic("GetContent")
 	return []byte{}
+}
+
+func Prepare(gdb gorm.DB) error {
+	db = gdb
+	d := db.AutoMigrate(&Mail{})
+	return d.Error
 }
