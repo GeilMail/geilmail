@@ -1,7 +1,7 @@
 storage:
     provider: sqlite
     sqlite:
-        dbpath: geilmail2.db
+        dbpath: geilmail.db
 imap:
     listenip: 0.0.0.0
     port: 1143

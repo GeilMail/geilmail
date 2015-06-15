@@ -1,5 +1,4 @@
 {
-    "github.com/DATA-DOG/go-sqlmock": "5d1551fda1604432bc39198b733897e07f6ee6e9",
     "github.com/davecgh/go-spew/spew": "f9f629a1d082960e5d1747f33c2b378612615fea",
     "github.com/facebookgo/ensure": "71188606beeac086a6089098de2dc387d26d7d92",
     "github.com/facebookgo/stack": "3df46e3d0ab4255cd8a0a6bb79561f33d9910c24",
@@ -15,5 +14,6 @@
     "golang.org/x/crypto/blowfish": "1e856cbfdf9bc25eefca75f83f25d55e35ae72e0",
     "golang.org/x/net/context": "3cffabab72adf04f8e3b01c5baf775361837b5fe",
     "gopkg.in/bluesuncorp/validator.v5": "df95f9de27b8022e57f8ce09448cee6b1170bb3d",
+    "gopkg.in/gorp.v1": "",
     "gopkg.in/yaml.v2": "c1cd2254a6dd314c9d73c338c12688c9325d85c6"
 }

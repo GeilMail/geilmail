@@ -2,17 +2,19 @@ package helpers
 
 import (
 	"fmt"
+	"log"
 	"strings"
 )
 
 type MailAddress string
 
 //TODO: implement
-func ValidMailAddress(addr MailAddress) bool {
-	panic("not implemented yet")
+func (addr MailAddress) Valid() bool {
+	log.Println("implement mail address validation!")
+	return true
 }
 
-func MailDomainPart(addr MailAddress) (string, error) {
+func (addr MailAddress) DomainPart() (string, error) {
 	l := strings.Split(string(addr), "@")
 	if len(l) != 2 {
 		return "", fmt.Errorf("Mail address %s is not valid.", addr)

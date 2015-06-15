@@ -1,11 +1,9 @@
 github.com/GeilMail/geilmail !self
-github.com/DATA-DOG/go-sqlmock
 github.com/davecgh/go-spew/spew 
 github.com/facebookgo/ensure 
 github.com/facebookgo/stack 
 github.com/facebookgo/subset 
 github.com/gin-gonic/gin 
-github.com/jinzhu/gorm
 github.com/landjur/go-uuid 
 github.com/manucorporat/sse 
 github.com/mattn/go-colorable 
@@ -16,4 +14,5 @@ golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish 
 golang.org/x/net/context 
 gopkg.in/bluesuncorp/validator.v5 
+gopkg.in/gorp.v1
 gopkg.in/yaml.v2 

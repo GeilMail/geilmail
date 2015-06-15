@@ -1,28 +1,39 @@
 package storage
 
 import (
-	"github.com/GeilMail/geilmail/cfg"
-	"github.com/GeilMail/geilmail/storage/users"
+	"database/sql"
+	"log"
+	"os"
 
-	"github.com/jinzhu/gorm"
+	"github.com/GeilMail/geilmail/cfg"
+	"github.com/GeilMail/geilmail/storage/mail"
+	"github.com/GeilMail/geilmail/storage/users"
+	"gopkg.in/gorp.v1"
+
 	// driver import
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var db gorm.DB
+var dbMap *gorp.DbMap
 
 func Boot(c *cfg.Config) {
-	var err error
-
 	switch c.Storage.Provider {
 	case "sqlite":
-		db, err = gorm.Open("sqlite3", c.Storage.SQLite.DBPath)
+		db, err := sql.Open("sqlite3", c.Storage.SQLite.DBPath)
 		if err != nil {
 			panic(err)
 		}
+		dbMap = &gorp.DbMap{Db: db, Dialect: gorp.SqliteDialect{}}
 	default:
 		panic("Invalid provider. Currently only 'sqlite' is supported.")
 	}
 
-	users.Prepare(db)
+	dbMap.TraceOn("[gorp]", log.New(os.Stdout, "geilmail: ", log.Lmicroseconds))
+
+	users.Prepare(dbMap)
+	mail.Prepare(dbMap)
+	err := dbMap.CreateTablesIfNotExists()
+	if err != nil {
+		panic(err)
+	}
 }

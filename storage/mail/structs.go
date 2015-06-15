@@ -3,16 +3,15 @@ package mail
 import (
 	"time"
 
-	"github.com/GeilMail/geilmail/storage/users"
-	"github.com/jinzhu/gorm"
+	"gopkg.in/gorp.v1"
 )
 
-var db gorm.DB
+var db *gorp.DbMap
 
 type Mail struct {
 	ID           uint
 	IncomingDate time.Time
-	Owner        users.User
+	OwnerID      uint
 	MailPath     string
 	Unread       bool
 }
@@ -22,8 +21,7 @@ func (m *Mail) GetContent() []byte {
 	return []byte{}
 }
 
-func Prepare(gdb gorm.DB) error {
-	db = gdb
-	d := db.AutoMigrate(&Mail{})
-	return d.Error
+func Prepare(dbm *gorp.DbMap) {
+	db = dbm
+	db.AddTableWithName(Mail{}, "mails")
 }

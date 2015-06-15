@@ -1,13 +1,13 @@
 package users
 
-import "github.com/jinzhu/gorm"
+import "gopkg.in/gorp.v1"
 
-var db gorm.DB
+var db *gorp.DbMap
 
 type User struct {
 	ID           uint
 	Domain       Domain
-	Mail         string `sql:"unique"`
+	Mail         string
 	PasswordHash []byte
 }
 
@@ -15,8 +15,8 @@ type Domain struct {
 	DomainName string `sql:"primary_key"`
 }
 
-func Prepare(gdb gorm.DB) error {
-	db = gdb
-	d := db.AutoMigrate(&User{}, &Domain{})
-	return d.Error
+func Prepare(dbm *gorp.DbMap) {
+	db = dbm
+	db.AddTableWithName(User{}, "users").SetKeys(true, "ID")
+	db.AddTableWithName(Domain{}, "domains").SetKeys(false, "DomainName")
 }

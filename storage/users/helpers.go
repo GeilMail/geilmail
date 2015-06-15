@@ -11,3 +11,7 @@ func checkPassword(input []byte, dbval []byte) bool {
 	}
 	return false
 }
+
+func HashPassword(input []byte) ([]byte, error) {
+	return bcrypt.GenerateFromPassword(input, bcryptCost)
+}

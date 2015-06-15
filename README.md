@@ -16,6 +16,12 @@ GeilMail will have SMTP and IMAP support with STARTTLS. There won't be support f
 
 ## Guidelines
 
+## Building/Testing
+
+For vendoring the tool [bunch](https://github.com/dkulchenko/bunch) is used. All dependencies can be resolved by typing `bunch install`. In order to run geilmail, type `bunch go run geilmail.go`.
+
+The tests can be executed with `bunch go test ./...`.
+
 ### Test Coverage
 
-A high test coverage is appreciated. In order to measure and inspect, type `go test -v -cover -covermode=count -coverprofile=cover.out && go tool cover -html=cover.out`
+A high test coverage is appreciated. In order to measure and inspect, type `bunch go test -v -cover -covermode=count -coverprofile=cover.out && go tool cover -html=cover.out`

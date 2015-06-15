@@ -16,12 +16,6 @@ import (
 
 func main() {
 	log.Println("Starting GeilMail")
-
-	gopath := os.Getenv("GOPATH")
-	if string(gopath[len(gopath)-1]) == ":" {
-		gopath = gopath[:len(gopath)-1]
-	}
-
 	conf := cfg.ReadConfig("config.yaml")
 
 	go imap.Boot(conf)
