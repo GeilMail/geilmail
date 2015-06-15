@@ -12,24 +12,38 @@ var (
 )
 
 func New(d Domain, mailAddr string, pwHash []byte) error {
+	_, err := GetDomainOrCreate(d.DomainName)
+	if err != nil {
+		return err
+	}
 	u := User{
-		Domain:       d,
+		Domain:       d.DomainName,
 		Mail:         mailAddr,
 		PasswordHash: pwHash,
 	}
-	err := db.Insert(&u)
+	err = db.Insert(&u)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func LookUpDomain(domainName string) (Domain, error) {
-	d, err := db.Get(&Domain{}, domainName)
+func GetDomainOrCreate(domainName string) (*Domain, error) {
+	domain, err := db.Get(Domain{}, domainName)
 	if err != nil {
-		return Domain{}, ErrNotFound
+		return nil, err
 	}
-	return d.(Domain), nil
+	if domain == nil {
+		d := &Domain{
+			DomainName: domainName,
+		}
+		err = db.Insert(d)
+		if err != nil {
+			return nil, err
+		}
+		return d, nil
+	}
+	return domain.(*Domain), nil
 }
 
 func CheckPassword(mailAddr helpers.MailAddress, pw []byte) bool {

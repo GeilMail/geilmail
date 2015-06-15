@@ -32,6 +32,7 @@ func Boot(c *cfg.Config) {
 
 	users.Prepare(dbMap)
 	mail.Prepare(dbMap)
+
 	err := dbMap.CreateTablesIfNotExists()
 	if err != nil {
 		panic(err)

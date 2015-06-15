@@ -6,7 +6,7 @@ var db *gorp.DbMap
 
 type User struct {
 	ID           uint
-	Domain       Domain
+	Domain       string
 	Mail         string
 	PasswordHash []byte
 }
