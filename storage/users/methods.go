@@ -11,43 +11,44 @@ var (
 	ErrInternal = errors.New("internal error")
 )
 
-func New(d Domain, mailAddr string, pwHash []byte) error {
-	_, err := GetDomainOrCreate(d.DomainName)
-	if err != nil {
-		return err
-	}
+func New(mailAddr helpers.MailAddress, pwHash []byte) error {
 	u := User{
-		Domain:       d.DomainName,
-		Mail:         mailAddr,
+		Mail:         string(mailAddr),
 		PasswordHash: pwHash,
 	}
-	err = db.Insert(&u)
+	err := db.Insert(&u)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func GetDomainOrCreate(domainName string) (*Domain, error) {
-	domain, err := db.Get(Domain{}, domainName)
+func CheckPassword(mailAddr helpers.MailAddress, pw []byte) bool {
+	u := &User{}
+	err := db.SelectOne(u, "SELECT passwordHash FROM users WHERE mail = ?;", string(mailAddr))
 	if err != nil {
-		return nil, err
+		return false
 	}
-	if domain == nil {
-		d := &Domain{
-			DomainName: domainName,
-		}
-		err = db.Insert(d)
+	return checkPassword(pw, u.PasswordHash)
+}
+
+// AllDomains retrieves all active domains that have mailboxes.
+func AllDomains() (domains []string, err error) {
+	var addrs []string
+	_, err = db.Select(&addrs, "SELECT mail FROM users;")
+	if err != nil {
+		return
+	}
+	mSet := map[string]struct{}{}
+	for _, ad := range addrs {
+		dp, err := helpers.MailAddress(ad).DomainPart()
 		if err != nil {
 			return nil, err
 		}
-		return d, nil
+		mSet[dp] = struct{}{}
 	}
-	return domain.(*Domain), nil
-}
-
-func CheckPassword(mailAddr helpers.MailAddress, pw []byte) bool {
-	u := &User{}
-	db.Select(u, "SELECT password_hash FROM users WHERE mail = ?", mailAddr)
-	return checkPassword(pw, u.PasswordHash)
+	for ad := range mSet {
+		domains = append(domains, ad)
+	}
+	return
 }

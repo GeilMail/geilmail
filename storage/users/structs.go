@@ -11,12 +11,7 @@ type User struct {
 	PasswordHash []byte
 }
 
-type Domain struct {
-	DomainName string `sql:"primary_key"`
-}
-
 func Prepare(dbm *gorp.DbMap) {
 	db = dbm
 	db.AddTableWithName(User{}, "users").SetKeys(true, "ID")
-	db.AddTableWithName(Domain{}, "domains").SetKeys(false, "DomainName")
 }

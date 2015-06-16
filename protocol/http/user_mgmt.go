@@ -34,17 +34,12 @@ func createAccount(c *gin.Context) {
 		badReq(c, "invalid mail address")
 		return
 	}
-	dp, err := maddr.DomainPart()
-	if err != nil {
-		badReq(c, "invalid mail address")
-		return
-	}
 	pwHash, err := users.HashPassword([]byte(req.Password))
 	if err != nil {
 		badReq(c, "couldn't hash password")
 	}
 
-	if err = users.New(users.Domain{DomainName: dp}, req.MailAddress, pwHash); err != nil {
+	if err = users.New(maddr, pwHash); err != nil {
 		badReq(c, err.Error())
 		return
 	}
