@@ -2,15 +2,16 @@ package helpers
 
 import (
 	"fmt"
-	"log"
+	"net/mail"
 	"strings"
 )
 
 type MailAddress string
 
-//TODO: implement
 func (addr MailAddress) Valid() bool {
-	log.Println("implement mail address validation!")
+	if _, err := mail.ParseAddress(string(addr)); err != nil {
+		return false
+	}
 	return true
 }
 

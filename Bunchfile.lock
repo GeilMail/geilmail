@@ -7,6 +7,7 @@
     "github.com/julienschmidt/httprouter": "8c199fb6259ffc1af525cc3ad52ee60ba8359669",
     "github.com/mattn/go-colorable": "d67e0b7d1797975196499f79bcc322c08b9f218b",
     "github.com/mattn/go-sqlite3": "542ae647f8601bafd96233961b150cae198e0295",
+    "github.com/mxk/go-imap/imap": "531c36c3f12d6a03ea766b07a77314aa51ec17f3",
     "golang.org/x/crypto/bcrypt": "1e856cbfdf9bc25eefca75f83f25d55e35ae72e0",
     "golang.org/x/crypto/blowfish": "1e856cbfdf9bc25eefca75f83f25d55e35ae72e0",
     "gopkg.in/gorp.v1": "c87af80f3cc5036b55b83d77171e156791085e2e",

@@ -12,18 +12,13 @@ import (
 	"github.com/facebookgo/ensure"
 )
 
-const smtpPort = 1587
+const testSMTPPort = 1587
 
 func TestMain(m *testing.M) {
-	gopath := os.Getenv("GOPATH")
-	if string(gopath[len(gopath)-1]) == ":" {
-		gopath = gopath[:len(gopath)-1]
-	}
-
 	rdy := Boot(&cfg.Config{
 		SMTP: cfg.SMTPConfig{
 			ListenIP: "0.0.0.0",
-			Port:     smtpPort,
+			Port:     testSMTPPort,
 		},
 		TLS: cfg.TLSConfig{},
 	})
@@ -50,7 +45,7 @@ func eq(a, b []byte) bool {
 func TestSMTPSubmission(t *testing.T) {
 	msgContent := []byte("This is a very specific message for the TestSMTPSubmission.\n")
 
-	err := sendMail(fmt.Sprintf("localhost:%d", smtpPort), nil, "test@example.com", []string{"other@example.com"}, msgContent, false)
+	err := sendMail(fmt.Sprintf("localhost:%d", testSMTPPort), nil, "test@example.com", []string{"other@example.com"}, msgContent, false)
 	ensure.Nil(t, err)
 
 	//TODO: test if it has been delivered
@@ -58,7 +53,7 @@ func TestSMTPSubmission(t *testing.T) {
 
 func TestStartTLS(t *testing.T) {
 	msgContent := []byte("StartTLS test msg")
-	err := sendMail(fmt.Sprintf("localhost:%d", smtpPort), nil, "test@example.com", []string{"test+subbox@example.com"}, msgContent, true)
+	err := sendMail(fmt.Sprintf("localhost:%d", testSMTPPort), nil, "test@example.com", []string{"test+subbox@example.com"}, msgContent, true)
 
 	ensure.Nil(t, err)
 }

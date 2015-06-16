@@ -15,11 +15,6 @@ import (
 const imapTestPort = 1143
 
 func TestMain(m *testing.M) {
-	gopath := os.Getenv("GOPATH")
-	if string(gopath[len(gopath)-1]) == ":" {
-		gopath = gopath[:len(gopath)-1]
-	}
-
 	rdy := Boot(&cfg.Config{
 		IMAP: cfg.IMAPConfig{
 			ListenIP: "0.0.0.0",
