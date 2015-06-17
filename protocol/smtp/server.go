@@ -13,17 +13,18 @@ import (
 )
 
 const (
-	hostName        = "mail.example.com" //TODO: make configurable
 	errMsgBadSyntax = "message not understood"
 	maxReceivers    = 10
 )
 
 var (
 	listening = true
+	hostName  string
 )
 
 // listen for plain SMTP connections
-func listen(listenHost string, listenPort int, rdy chan bool) {
+func listen(listenHost string, listenPort int, hostName string, rdy chan bool) {
+	hostName = hostName
 	ln, err := net.Listen("tcp", fmt.Sprintf("%v:%v", listenHost, listenPort))
 	if err != nil {
 		panic(err)

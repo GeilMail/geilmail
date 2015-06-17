@@ -18,10 +18,10 @@ func main() {
 	log.Println("Starting GeilMail")
 	conf := cfg.ReadConfig("config.yaml")
 
+	storage.Boot(conf)
 	go imap.Boot(conf)
 	go smtp.Boot(conf)
 	go http.Boot(conf)
-	go storage.Boot(conf)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, os.Kill)

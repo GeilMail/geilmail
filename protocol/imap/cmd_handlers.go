@@ -3,7 +3,6 @@ package imap
 import (
 	"errors"
 	"fmt"
-	"log"
 	"net"
 	"strings"
 
@@ -49,7 +48,6 @@ func handleLoginCommand(c net.Conn, seq, msg string) error {
 		*s = helpers.UnquoteIfNeeded(*s, '"')
 	}
 
-	log.Println(username, password)
 	if users.CheckPassword(helpers.MailAddress(username), []byte(password)) {
 		seqSend(c, seq, "OK LOGIN")
 		return nil

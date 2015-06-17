@@ -3,7 +3,6 @@ package imap
 import (
 	"crypto/tls"
 	"fmt"
-	"log"
 	"os"
 	"testing"
 	"time"
@@ -18,26 +17,27 @@ import (
 
 const imapTestPort = 1143
 
+var testConfStruct = &cfg.Config{
+	IMAP: cfg.IMAPConfig{
+		ListenIP: "0.0.0.0",
+		Port:     imapTestPort,
+	},
+	TLS: cfg.TLSConfig{},
+	Storage: cfg.StorageConfig{
+		Provider: "sqlite",
+		SQLite: struct{ DBPath string }{
+			DBPath: "",
+		},
+	},
+}
+
 func TestMain(m *testing.M) {
 	testDBPath := "test.db"
-	conf := &cfg.Config{
-		IMAP: cfg.IMAPConfig{
-			ListenIP: "0.0.0.0",
-			Port:     imapTestPort,
-		},
-		TLS: cfg.TLSConfig{},
-		Storage: cfg.StorageConfig{
-			Provider: "sqlite",
-			SQLite: struct{ DBPath string }{
-				DBPath: testDBPath,
-			},
-		},
-	}
+	conf := testConfStruct
+	conf.Storage.SQLite.DBPath = testDBPath
 	rdy := Boot(conf)
 	storage.Boot(conf)
 	err := users.New(helpers.MailAddress("test@example.com"), "1234")
-	log.Println(">>>>>>>>>>")
-	log.Println(users.CheckPassword("test@example.com", []byte("1234")))
 	if err != nil {
 		panic(err)
 	}

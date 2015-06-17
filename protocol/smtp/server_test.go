@@ -8,23 +8,37 @@ import (
 	"testing"
 
 	"github.com/GeilMail/geilmail/cfg"
+	"github.com/GeilMail/geilmail/storage"
 
 	"github.com/facebookgo/ensure"
 )
 
 const testSMTPPort = 1587
 
-func TestMain(m *testing.M) {
-	rdy := Boot(&cfg.Config{
-		SMTP: cfg.SMTPConfig{
-			ListenIP: "0.0.0.0",
-			Port:     testSMTPPort,
+var testConfStruct = &cfg.Config{
+	SMTP: cfg.SMTPConfig{
+		ListenIP: "0.0.0.0",
+		Port:     testSMTPPort,
+	},
+	TLS: cfg.TLSConfig{},
+	Storage: cfg.StorageConfig{
+		Provider: "sqlite",
+		SQLite: struct{ DBPath string }{
+			DBPath: "",
 		},
-		TLS: cfg.TLSConfig{},
-	})
+	},
+}
+
+func TestMain(m *testing.M) {
+	testDBPath := "test.db"
+	conf := testConfStruct
+	conf.Storage.SQLite.DBPath = testDBPath
+	storage.Boot(conf)
+	rdy := Boot(conf)
 	<-rdy
 	ret := m.Run()
 	ShutDown()
+	os.Remove(testDBPath)
 	os.Exit(ret)
 }
 

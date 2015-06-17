@@ -30,6 +30,7 @@ type IMAPConfig struct {
 type SMTPConfig struct {
 	ListenIP string
 	Port     int
+	HostName string
 }
 
 type TLSConfig struct {

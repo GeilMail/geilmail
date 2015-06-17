@@ -85,7 +85,7 @@ func handleIncomingConnection(c net.Conn) {
 		send(c, "* CAPABILITY IMAP4rev1 AUTH=PLAIN")
 		send(c, fmt.Sprintf("%s OK CAPABILITY completed", seq))
 	} else {
-		sendError(c, "at this moment I want to be asked about my CAPABILITY")
+		seqSendError(c, seq, "at this moment I want to be asked about my CAPABILITY")
 		return
 	}
 
