@@ -11,12 +11,16 @@ var (
 	ErrInternal = errors.New("internal error")
 )
 
-func New(mailAddr helpers.MailAddress, pwHash []byte) error {
+func New(mailAddr helpers.MailAddress, password string) error {
+	pwHash, err := HashPassword([]byte(password))
+	if err != nil {
+		return err
+	}
 	u := User{
 		Mail:         string(mailAddr),
 		PasswordHash: pwHash,
 	}
-	err := db.Insert(&u)
+	err = db.Insert(&u)
 	if err != nil {
 		return err
 	}

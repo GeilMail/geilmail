@@ -30,9 +30,7 @@ func testTeardownDB(t *testing.T) {
 
 func TestUserCreateAndLogin(t *testing.T) {
 	testBuildDB(t)
-	pwHash, err := HashPassword([]byte("123456"))
-	ensure.Nil(t, err, pwHash)
-	err = New("test@example.com", pwHash)
+	err := New("test@example.com", "123456")
 	ensure.Nil(t, err)
 
 	ensure.True(t, CheckPassword("test@example.com", []byte("123456")), "oink")
@@ -43,15 +41,14 @@ func TestUserCreateAndLogin(t *testing.T) {
 
 func TestDomainListing(t *testing.T) {
 	testBuildDB(t)
-	pwHash, err := HashPassword([]byte("123456"))
+	var err error
+	err = New("a@a.example.com", "123456")
 	ensure.Nil(t, err)
-	err = New("a@a.example.com", pwHash)
+	err = New("b@a.example.com", "123456")
 	ensure.Nil(t, err)
-	err = New("b@a.example.com", pwHash)
+	err = New("b@c.example.com", "123456")
 	ensure.Nil(t, err)
-	err = New("b@c.example.com", pwHash)
-	ensure.Nil(t, err)
-	err = New("f@d.example.com", pwHash)
+	err = New("f@d.example.com", "123456")
 	ensure.Nil(t, err)
 
 	dm, err := AllDomains()

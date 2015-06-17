@@ -13,10 +13,18 @@ func send(c net.Conn, data string) {
 	c.Write([]byte(data + "\r\n"))
 }
 
+func seqSend(c net.Conn, seq, data string) {
+	send(c, fmt.Sprintf("%s %s", seq, data))
+}
+
 func sendError(c net.Conn, err string) {
 	log.Println("sent errormsg:", err)
-	c.Write([]byte(err))
+	c.Write([]byte(err + "\r\n"))
 	c.Close()
+}
+
+func seqSendError(c net.Conn, seq, err string) {
+	sendError(c, fmt.Sprintf("%s %s", seq, err))
 }
 
 func receive(r *textproto.Reader) (string, error) {

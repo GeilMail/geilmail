@@ -3,11 +3,15 @@ package imap
 import (
 	"crypto/tls"
 	"fmt"
+	"log"
 	"os"
 	"testing"
 	"time"
 
 	"github.com/GeilMail/geilmail/cfg"
+	"github.com/GeilMail/geilmail/helpers"
+	"github.com/GeilMail/geilmail/storage"
+	"github.com/GeilMail/geilmail/storage/users"
 	"github.com/facebookgo/ensure"
 	"github.com/mxk/go-imap/imap"
 )
@@ -15,16 +19,32 @@ import (
 const imapTestPort = 1143
 
 func TestMain(m *testing.M) {
-	rdy := Boot(&cfg.Config{
+	testDBPath := "test.db"
+	conf := &cfg.Config{
 		IMAP: cfg.IMAPConfig{
 			ListenIP: "0.0.0.0",
 			Port:     imapTestPort,
 		},
 		TLS: cfg.TLSConfig{},
-	})
+		Storage: cfg.StorageConfig{
+			Provider: "sqlite",
+			SQLite: struct{ DBPath string }{
+				DBPath: testDBPath,
+			},
+		},
+	}
+	rdy := Boot(conf)
+	storage.Boot(conf)
+	err := users.New(helpers.MailAddress("test@example.com"), "1234")
+	log.Println(">>>>>>>>>>")
+	log.Println(users.CheckPassword("test@example.com", []byte("1234")))
+	if err != nil {
+		panic(err)
+	}
 	<-rdy
 	ret := m.Run()
 	ShutDown()
+	os.Remove(testDBPath)
 	os.Exit(ret)
 }
 

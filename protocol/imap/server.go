@@ -105,8 +105,10 @@ func handleIncomingConnection(c net.Conn) {
 		magicWord = strings.ToUpper(strings.Split(imsg, " ")[0])
 	}
 	if magicWord == "LOGIN" {
-		//TODO: implement LOGIN
-		send(c, fmt.Sprintf("%s OK LOGIN", seq))
+		err := handleLoginCommand(c, seq, imsg)
+		if err != nil {
+			return
+		}
 	} else {
 		sendError(c, fmt.Sprintf("%s BAD no idea what you intended to do", seq))
 		return
