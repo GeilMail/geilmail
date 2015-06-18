@@ -51,9 +51,7 @@ func handleLoginCommand(c net.Conn, seq, msg string) error {
 	if users.CheckPassword(helpers.MailAddress(username), []byte(password)) {
 		seqSend(c, seq, "OK LOGIN")
 		return nil
-	} else {
-		seqSendError(c, seq, "NO invalid login")
-		return errors.New("invalid login")
 	}
-
+	seqSendError(c, seq, "NO invalid login")
+	return errors.New("invalid login")
 }

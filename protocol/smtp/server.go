@@ -58,7 +58,7 @@ func handleIncomingConnection(c net.Conn) {
 	defer c.Close()
 
 	// welcome the client
-	advMsg := fmt.Sprintf("220 %s SMTP service ready\n", hostName)
+	advMsg := fmt.Sprintf("220 %s ESMTP service ready\n", hostName)
 	write(c, advMsg)
 
 	// read HELO/EHLO
@@ -74,10 +74,12 @@ func handleIncomingConnection(c net.Conn) {
 		return
 	}
 	//TODO: verify host name
-
-	// signalize waiting for content
-	welcomeMsg := fmt.Sprintf("250-Hello %s, we are ready over here\n250 %s\n", "dummy", strings.Join(capabilities, " ")) //TODO: refactor this and signalize further capabilities, if needed
-	write(c, welcomeMsg)
+	switch imsg[:4] {
+	case "HELO":
+		write(c, fmt.Sprintf("HELO %s", hostName))
+	case "EHLO":
+		write(c, fmt.Sprintf("250-Hello %s, we are ready over here\n250 %s\n", "dummy", strings.Join(capabilities, " ")))
+	}
 
 	imsg, err = read(rdr)
 	if err != nil {
