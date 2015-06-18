@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 	"net/textproto"
+	"strings"
 
 	"github.com/GeilMail/geilmail/helpers"
 	"github.com/GeilMail/geilmail/storage/mail"
@@ -18,8 +19,9 @@ const (
 )
 
 var (
-	listening = true
-	hostName  string
+	listening    = true
+	capabilities = []string{"AUTH", "STARTTLS", "LOGIN"}
+	hostName     string
 )
 
 // listen for plain SMTP connections
@@ -57,10 +59,10 @@ func handleIncomingConnection(c net.Conn) {
 
 	// welcome the client
 	advMsg := fmt.Sprintf("220 %s SMTP service ready\n", hostName)
-	c.Write([]byte(advMsg))
+	write(c, advMsg)
 
 	// read HELO/EHLO
-	imsg, err = rdr.ReadLine()
+	imsg, err = read(rdr)
 	if err != nil {
 		writeError(c, errMsgBadSyntax)
 		return
@@ -74,10 +76,10 @@ func handleIncomingConnection(c net.Conn) {
 	//TODO: verify host name
 
 	// signalize waiting for content
-	welcomeMsg := fmt.Sprintf("250-Hello %s, we are ready over here\n250 STARTTLS\n", "dummy") //TODO: refactor this and signalize further capabilities, if needed
-	c.Write([]byte(welcomeMsg))
+	welcomeMsg := fmt.Sprintf("250-Hello %s, we are ready over here\n250 %s\n", "dummy", strings.Join(capabilities, " ")) //TODO: refactor this and signalize further capabilities, if needed
+	write(c, welcomeMsg)
 
-	imsg, err = rdr.ReadLine()
+	imsg, err = read(rdr)
 	if err != nil {
 		writeError(c, errMsgBadSyntax)
 		return
@@ -85,22 +87,22 @@ func handleIncomingConnection(c net.Conn) {
 
 	// check if STARTTLS has been annouced
 	if imsg == "STARTTLS" {
-		c.Write([]byte("220 i love encryption\n"))
+		write(c, "220 i love encryption\n")
 		// overwriting connection and reader for transparent encryption handling
 		c = tls.Server(c, tlsConf)
 		rdr = textproto.NewReader(bufio.NewReader(c))
 		// usually the client will now send EHLO
-		imsg, err = rdr.ReadLine()
+		imsg, err = read(rdr)
 		if len(imsg) >= 4 {
 			if imsg[:4] == "EHLO" {
 				advMsg := fmt.Sprintf("250 ready\n")
-				c.Write([]byte(advMsg))
+				write(c, advMsg)
 			} else {
 				writeError(c, "only accepting EHLO at that place")
 			}
 		}
 		// allow continuing with MAIL FROM:
-		imsg, err = rdr.ReadLine()
+		imsg, err = read(rdr)
 	}
 
 	// read MAIL FROM:
@@ -123,7 +125,7 @@ func handleIncomingConnection(c net.Conn) {
 			writeError(c, "too many receivers")
 			return
 		}
-		imsg, err = rdr.ReadLine()
+		imsg, err = read(rdr)
 		if err != nil {
 			writeError(c, errMsgBadSyntax)
 			return
@@ -147,7 +149,7 @@ func handleIncomingConnection(c net.Conn) {
 		okMsg(c)
 	}
 
-	c.Write([]byte("354 End data with <CR><LF>.<CR><LF>\n"))
+	write(c, "354 End data with <CR><LF>.<CR><LF>\n")
 
 	mailData, err := rdr.ReadDotBytes()
 	if err != nil {
@@ -155,24 +157,16 @@ func handleIncomingConnection(c net.Conn) {
 		return
 	}
 
-	c.Write([]byte("250 Ok: queued as 1337\n")) //TODO queue id
+	write(c, "250 Ok: queued as 1337\n") //TODO queue id
 	log.Println("Received message")
 	mail.MailDrop(receivers, mailData)
 
-	imsg, err = rdr.ReadLine()
+	imsg, err = read(rdr)
 	if err != nil {
 		writeError(c, errMsgBadSyntax)
 		return
 	}
 	if imsg == "QUIT" {
-		c.Write([]byte("221 Bye\n"))
+		write(c, "221 Bye\n")
 	}
-}
-
-func writeError(c net.Conn, msg string) {
-	c.Write([]byte(fmt.Sprintf("500 %s\n", msg)))
-}
-
-func okMsg(c net.Conn) {
-	c.Write([]byte("250 Ok\n"))
 }
