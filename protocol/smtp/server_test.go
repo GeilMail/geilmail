@@ -42,20 +42,6 @@ func TestMain(m *testing.M) {
 	os.Exit(ret)
 }
 
-func eq(a, b []byte) bool {
-	if len(a) != len(b) {
-		return false
-	}
-
-	for i := range a {
-		if a[i] != b[i] {
-			return false
-		}
-	}
-
-	return true
-}
-
 func TestSMTPSubmission(t *testing.T) {
 	msgContent := []byte("This is a very specific message for the TestSMTPSubmission.\n")
 
@@ -70,6 +56,13 @@ func TestStartTLS(t *testing.T) {
 	err := sendMail(fmt.Sprintf("localhost:%d", testSMTPPort), nil, "test@example.com", []string{"test+subbox@example.com"}, msgContent, true)
 
 	ensure.Nil(t, err)
+}
+
+func TestWrongLogin(t *testing.T) {
+	msgContent := []byte("TestLogin Mail")
+	auth := smtp.PlainAuth("", "test@example.com", "123456", "localhost")
+	err := sendMail(fmt.Sprintf("localhost:%d", testSMTPPort), auth, "test@example.com", []string{"test+subbox@example.com"}, msgContent, true)
+	ensure.NotNil(t, err)
 }
 
 // derived from golang's src/net/smtp/smtp.go, (http://golang.org/LICENSE)

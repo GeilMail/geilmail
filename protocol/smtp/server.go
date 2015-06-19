@@ -2,7 +2,9 @@ package smtp
 
 import (
 	"bufio"
+	"bytes"
 	"crypto/tls"
+	"encoding/base64"
 	"fmt"
 	"log"
 	"net"
@@ -11,6 +13,7 @@ import (
 
 	"github.com/GeilMail/geilmail/helpers"
 	"github.com/GeilMail/geilmail/storage/mail"
+	"github.com/GeilMail/geilmail/storage/users"
 )
 
 const (
@@ -20,7 +23,7 @@ const (
 
 var (
 	listening    = true
-	capabilities = []string{"AUTH", "STARTTLS", "LOGIN"}
+	capabilities = []string{"STARTTLS", "AUTH", "LOGIN", "PLAIN"}
 	hostName     string
 )
 
@@ -105,6 +108,30 @@ func handleIncomingConnection(c net.Conn) {
 		}
 		// allow continuing with MAIL FROM:
 		imsg, err = read(rdr)
+	}
+
+	if strings.HasPrefix(imsg, "AUTH") {
+		msgTokens := strings.Split(imsg, " ")
+		if len(msgTokens) < 3 {
+			writeError(c, "something went wrong with your AUTH")
+			return
+		}
+
+		if msgTokens[1] == "PLAIN" {
+			tok, err := base64.StdEncoding.DecodeString(msgTokens[2])
+			if err != nil {
+				writeError(c, "problems with PLAIN")
+			}
+			log.Println(tok)
+			triple := bytes.Split(tok, []byte("\x00"))
+			loginCorrect := users.CheckPassword(helpers.MailAddress(triple[1]), triple[2])
+			if !loginCorrect {
+				writeError(c, "wrong username/password")
+			} else {
+				write(c, "235 OK\n")
+			}
+		}
+		// imsg, err = read(rdr)
 	}
 
 	// read MAIL FROM:
